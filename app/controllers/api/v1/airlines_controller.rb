@@ -1,16 +1,15 @@
 module Api
     module V1
-        class AirlinesController < ApplicationControll
+        class AirlinesController < ApplicationController
             def index
             airlines = Airline.all
 
-            AirlineSerializer.new(airlines, options).serializer_json
+            render json: AirlineSerializer.new(airlines, options).serialized_json
             end
 
             def show
-
-                airline = Airline.find_by(slug: param[:slug])
-                render json: AirlineSerializer.new(airline, options).serializer_json
+                airline = Airline.find_by(slug: params[:slug])
+                render json: AirlineSerializer.new(airline, options).serialized_json
 
             end
 
@@ -18,26 +17,31 @@ module Api
                 airline = Airline.new(airline_params)
 
                 if airline.save
-                    render json: AirlineSerializer.new(airline).serializer_json
+                    render json: AirlineSerializer.new(airline).serialized_json
                 else
                     render json: {error: airline.error.message}, status:422
+                end
             end
             def update
-                airline = Airline.find_by(slug: param[:slug])
+                airline = Airline.find_by(slug: params[:slug])
 
                 if airline.update(airline_params)
-                    render json: AirlineSerializer.new(airline, options).serializer_json
+                    render json: AirlineSerializer.new(airline, options).serialized_json
                 else
                     render json: {error: airline.error.message}, status:422
+                end
+
             end
            
             def destroy
-                airline = Airline.find_by(slug: param[:slug])
+                airline = Airline.find_by(slug: params[:slug])
 
-                if airline.destroy(airline_params)
+                if airline.destroy
                     head :no_content
                 else
                     render json: {error: airline.error.message}, status:422
+                end
+
             end
             private
             def airline_params
